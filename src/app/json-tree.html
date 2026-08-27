@@ -1,0 +1,54 @@
+<div class="tree-toolbar">
+  <button type="button" (click)="expandAll()">Expand all</button>
+  <button type="button" (click)="collapseAll()">Collapse all</button>
+</div>
+
+<div class="tree" role="tree">
+  @for (row of rows(); track row.id) {
+    <div class="tree-row" role="treeitem" [attr.aria-expanded]="row.type === 'open' ? !row.collapsed : null">
+      <span class="gutter" [style.width.px]="row.depth * 14"></span>
+
+      @if (row.type === 'open') {
+        <button
+          type="button"
+          class="toggle"
+          [attr.aria-label]="(row.collapsed ? 'Expand ' : 'Collapse ') + (row.key ?? 'node')"
+          (click)="toggle(row.path)"
+        >
+          {{ row.collapsed ? '▸' : '▾' }}
+        </button>
+      } @else {
+        <span class="toggle spacer"></span>
+      }
+
+      @if (row.key !== null && row.type !== 'close') {
+        <span class="tok-key">"{{ row.key }}"</span><span class="tok-punc">:&nbsp;</span>
+      }
+
+      @switch (row.type) {
+        @case ('open') {
+          <span class="tok-punc">{{ row.kind === 'array' ? '[' : '{' }}</span>
+          @if (row.collapsed) {
+            <span class="summary">… {{ row.count }} {{ row.count === 1 ? 'item' : 'items' }} </span>
+            <span class="tok-punc">{{ row.kind === 'array' ? ']' : '}' }}</span>
+            @if (!row.isLast) {
+              <span class="tok-punc">,</span>
+            }
+          }
+        }
+        @case ('close') {
+          <span class="tok-punc">{{ row.kind === 'array' ? ']' : '}' }}</span>
+          @if (!row.isLast) {
+            <span class="tok-punc">,</span>
+          }
+        }
+        @default {
+          <span class="tok-{{ row.kind }}">{{ row.text }}</span>
+          @if (!row.isLast) {
+            <span class="tok-punc">,</span>
+          }
+        }
+      }
+    </div>
+  }
+</div>

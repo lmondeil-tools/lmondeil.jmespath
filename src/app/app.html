@@ -17,35 +17,53 @@
             <h2 id="source-heading">Source JSON</h2>
           </div>
 
-          <label class="secondary-button" for="json-file">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
-            </svg>
-            Load JSON
-          </label>
-          <input
-            id="json-file"
-            class="visually-hidden"
-            type="file"
-            accept=".json,application/json"
-            (change)="loadJsonFile($event)"
-          />
+          <div class="heading-actions">
+            <div class="view-switch" role="group" aria-label="Source view">
+              <button type="button" [class.active]="sourceView() === 'code'" (click)="sourceView.set('code')">Edit</button>
+              <button type="button" [class.active]="sourceView() === 'tree'" (click)="sourceView.set('tree')">Tree</button>
+            </div>
+
+            <label class="secondary-button" for="json-file">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+              </svg>
+              Load JSON
+            </label>
+            <input
+              id="json-file"
+              class="visually-hidden"
+              type="file"
+              accept=".json,application/json"
+              (change)="loadJsonFile($event)"
+            />
+          </div>
         </div>
 
         <div class="editor-frame source-frame">
           <span class="editor-label">SOURCE.JSON</span>
-          <div class="code-input">
-            <pre class="code-highlight" aria-hidden="true" #sourceHighlight>@for (token of sourceTokens(); track $index) {<span class="tok-{{ token.type }}">{{ token.text }}</span>}</pre>
-            <textarea
-              id="source"
-              aria-label="Source JSON"
-              spellcheck="false"
-              [ngModel]="sourceJson()"
-              (ngModelChange)="sourceJson.set($event)"
-              (scroll)="syncScroll($event, sourceHighlight)"
-              [placeholder]="sourcePlaceholder"
-            ></textarea>
-          </div>
+
+          @if (sourceView() === 'tree') {
+            @if (sourceTree(); as parsed) {
+              @if (parsed.ok) {
+                <app-json-tree [value]="parsed.value" />
+              } @else {
+                <p class="tree-message">{{ parsed.error }}</p>
+              }
+            }
+          } @else {
+            <div class="code-input">
+              <pre class="code-highlight" aria-hidden="true" #sourceHighlight>@for (token of sourceTokens(); track $index) {<span class="tok-{{ token.type }}">{{ token.text }}</span>}</pre>
+              <textarea
+                id="source"
+                aria-label="Source JSON"
+                spellcheck="false"
+                [ngModel]="sourceJson()"
+                (ngModelChange)="sourceJson.set($event)"
+                (scroll)="syncScroll($event, sourceHighlight)"
+                [placeholder]="sourcePlaceholder"
+              ></textarea>
+            </div>
+          }
         </div>
       </div>
 

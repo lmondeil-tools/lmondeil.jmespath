@@ -26,6 +26,7 @@ const TOKEN_PATTERN =
 })
 export class App {
   protected readonly sourceJson = signal('');
+  protected readonly sourceView = signal<'code' | 'tree'>('code');
   protected readonly query = signal('');
   protected readonly result = signal('');
   protected readonly resultValue = signal<unknown>(undefined);
@@ -33,6 +34,20 @@ export class App {
   protected readonly status = signal<StatusMessage | null>(null);
 
   protected readonly sourceTokens = computed<Token[]>(() => this.tokenize(this.sourceJson()));
+
+  protected readonly sourceTree = computed(() => {
+    const text = this.sourceJson().trim();
+
+    if (!text) {
+      return { ok: false, value: undefined, error: 'Enter source JSON or load a file to browse it as a tree.' };
+    }
+
+    try {
+      return { ok: true, value: JSON.parse(text) as unknown, error: '' };
+    } catch (error: unknown) {
+      return { ok: false, value: undefined, error: `The source JSON is invalid: ${this.errorMessage(error)}` };
+    }
+  });
 
   protected readonly sourcePlaceholder = `{
   "people": [

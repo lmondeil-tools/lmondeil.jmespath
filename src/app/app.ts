@@ -31,6 +31,11 @@ export class App {
   protected readonly result = signal('');
   protected readonly resultValue = signal<unknown>(undefined);
   protected readonly resultView = signal<'tree' | 'raw'>('tree');
+  protected readonly chainCollapsed = signal(false);
+  protected readonly chainQuery = signal('');
+  protected readonly chainResult = signal('');
+  protected readonly chainResultValue = signal<unknown>(undefined);
+  protected readonly chainResultView = signal<'tree' | 'raw'>('tree');
   protected readonly status = signal<StatusMessage | null>(null);
 
   protected readonly sourceTokens = computed<Token[]>(() => this.tokenize(this.sourceJson()));
@@ -110,6 +115,7 @@ export class App {
       const transformed = jmespath.search(parsedSource, expression);
       this.result.set(JSON.stringify(transformed, null, 2) ?? 'null');
       this.resultValue.set(transformed);
+      this.clearChainResult();
       this.status.set({ type: 'success', message: 'Query completed successfully.' });
     } catch (error: unknown) {
       this.status.set({
@@ -117,6 +123,37 @@ export class App {
         message: `The JMESPath query could not be evaluated: ${this.errorMessage(error)}`,
       });
     }
+  }
+
+  protected runChainQuery(): void {
+    const expression = this.chainQuery().trim();
+
+    if (!this.result()) {
+      this.status.set({ type: 'warning', message: 'Run a transformation before chaining a query.' });
+      return;
+    }
+
+    if (!expression) {
+      this.status.set({ type: 'warning', message: 'Enter a chained JMESPath query.' });
+      return;
+    }
+
+    try {
+      const transformed = jmespath.search(this.resultValue() ?? null, expression);
+      this.chainResult.set(JSON.stringify(transformed, null, 2) ?? 'null');
+      this.chainResultValue.set(transformed);
+      this.status.set({ type: 'success', message: 'Chained query completed successfully.' });
+    } catch (error: unknown) {
+      this.status.set({
+        type: 'error',
+        message: `The chained JMESPath query could not be evaluated: ${this.errorMessage(error)}`,
+      });
+    }
+  }
+
+  private clearChainResult(): void {
+    this.chainResult.set('');
+    this.chainResultValue.set(undefined);
   }
 
   protected syncScroll(event: Event, highlight: HTMLElement): void {

@@ -65,12 +65,17 @@ h1 {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
-  max-width: 1540px;
+  max-width: 1900px;
   height: calc(100vh - 168px);
   min-height: 540px;
   margin: 0 auto;
+  transition: grid-template-columns 200ms ease;
+}
+
+.workspace.chain-collapsed {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 58px;
 }
 
 .panel {
@@ -84,10 +89,85 @@ h1 {
 }
 
 .result-panel,
-.input-panel {
+.input-panel,
+.chain-panel {
   display: flex;
   min-height: 0;
   flex-direction: column;
+}
+
+.chain-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.chain-query-section {
+  flex: 0 0 auto;
+  padding: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chain-result-section {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 22px;
+}
+
+.panel-rail {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 22px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  writing-mode: vertical-rl;
+}
+
+.panel-rail:hover {
+  background: rgb(255 255 255 / 3%);
+  color: var(--accent);
+}
+
+.rail-chevron {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.rail-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.icon-button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.icon-button:hover {
+  border-color: #526488;
+  color: var(--text);
 }
 
 .result-panel,
@@ -448,6 +528,25 @@ textarea[readonly] {
     grid-template-columns: 1fr;
   }
 
+  .workspace.chain-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .chain-panel {
+    min-height: 520px;
+  }
+
+  .chain-panel:has(.panel-rail) {
+    min-height: 58px;
+  }
+
+  .panel-rail {
+    height: 58px;
+    justify-content: center;
+    padding: 0 22px;
+    writing-mode: horizontal-tb;
+  }
+
   .input-panel {
     min-height: 560px;
   }
@@ -477,7 +576,9 @@ textarea[readonly] {
 
   .result-panel,
   .source-section,
-  .query-section {
+  .query-section,
+  .chain-query-section,
+  .chain-result-section {
     padding: 16px;
   }
 }

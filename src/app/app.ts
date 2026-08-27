@@ -31,7 +31,7 @@ export class App {
   protected readonly result = signal('');
   protected readonly resultValue = signal<unknown>(undefined);
   protected readonly resultView = signal<'tree' | 'raw'>('tree');
-  protected readonly chainCollapsed = signal(false);
+  protected readonly chainCollapsed = signal(true);
   protected readonly chainQuery = signal('');
   protected readonly chainResult = signal('');
   protected readonly chainResultValue = signal<unknown>(undefined);

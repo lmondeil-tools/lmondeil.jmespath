@@ -17,3 +17,17 @@ Open `http://localhost:4200`.
 npm run build
 npm test -- --watch=false
 ```
+
+## Build for docker
+
+```bash
+docker build -t jmespath-transformer:latest .
+```
+
+## Run on docker
+
+```bash
+docker run -d -p 8182:8182 --name jmespath-transformer jmespath-transformer
+```
+
+Open `http://localhost:8182`.

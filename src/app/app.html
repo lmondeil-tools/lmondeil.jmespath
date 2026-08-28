@@ -1,0 +1,232 @@
+<main class="app-shell">
+  <header class="app-header">
+    <div class="brand-mark" aria-hidden="true">&gt;_</div>
+    <div>
+      <p class="eyebrow">JSON WORKBENCH</p>
+      <h1>JMESPath Transformer</h1>
+      <p class="subtitle">Explore and reshape JSON data directly in your browser.</p>
+    </div>
+  </header>
+
+  <div class="workspace" [class.chain-collapsed]="chainCollapsed()">
+    <section class="panel input-panel" aria-labelledby="source-heading">
+      <div class="source-section">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-number">01 / INPUT</p>
+            <h2 id="source-heading">Source JSON</h2>
+          </div>
+
+          <div class="heading-actions">
+            <div class="view-switch" role="group" aria-label="Source view">
+              <button type="button" [class.active]="sourceView() === 'code'" (click)="sourceView.set('code')">Edit</button>
+              <button type="button" [class.active]="sourceView() === 'tree'" (click)="sourceView.set('tree')">Tree</button>
+            </div>
+
+            <label class="secondary-button" for="json-file">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" />
+              </svg>
+              Load JSON
+            </label>
+            <input
+              id="json-file"
+              class="visually-hidden"
+              type="file"
+              accept=".json,application/json"
+              (change)="loadJsonFile($event)"
+            />
+          </div>
+        </div>
+
+        <div class="editor-frame source-frame">
+          <span class="editor-label">SOURCE.JSON</span>
+
+          @if (sourceView() === 'tree') {
+            @if (sourceTree(); as parsed) {
+              @if (parsed.ok) {
+                <app-json-tree [value]="parsed.value" />
+              } @else {
+                <p class="tree-message">{{ parsed.error }}</p>
+              }
+            }
+          } @else {
+            <div class="code-input">
+              <pre class="code-highlight" aria-hidden="true" #sourceHighlight>@for (token of sourceTokens(); track $index) {<span class="tok-{{ token.type }}">{{ token.text }}</span>}</pre>
+              <textarea
+                id="source"
+                aria-label="Source JSON"
+                spellcheck="false"
+                [ngModel]="sourceJson()"
+                (ngModelChange)="sourceJson.set($event)"
+                (scroll)="syncScroll($event, sourceHighlight)"
+                [placeholder]="sourcePlaceholder"
+              ></textarea>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="query-section">
+        <div class="query-heading">
+          <div>
+            <p class="panel-number">02 / QUERY</p>
+            <h2>JMESPath expression</h2>
+          </div>
+          <span class="shortcut">Ctrl + Enter</span>
+        </div>
+
+        <div class="editor-frame query-frame">
+          <span class="editor-label">EXPRESSION</span>
+          <textarea
+            id="query"
+            aria-label="JMESPath query"
+            spellcheck="false"
+            [ngModel]="query()"
+            (ngModelChange)="query.set($event)"
+            placeholder="people[?age > `30`].name"
+            (keydown.control.enter)="runQuery()"
+          ></textarea>
+        </div>
+
+        <button class="run-button" type="button" (click)="runQuery()">
+          Run transformation
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="result-heading">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-number">03 / OUTPUT</p>
+          <h2 id="result-heading">Transformation result</h2>
+        </div>
+
+        <div class="view-switch" role="group" aria-label="Result view">
+          <button type="button" [class.active]="resultView() === 'tree'" (click)="resultView.set('tree')">Tree</button>
+          <button type="button" [class.active]="resultView() === 'raw'" (click)="resultView.set('raw')">Raw</button>
+        </div>
+      </div>
+
+      <div class="editor-frame result-frame">
+        <span class="editor-label">RESULT.JSON</span>
+
+        @if (resultView() === 'tree' && result()) {
+          <app-json-tree [value]="resultValue()" />
+        } @else {
+          <textarea
+            id="result"
+            aria-label="Transformation result"
+            readonly
+            spellcheck="false"
+            [placeholder]="resultPlaceholder"
+            [value]="result()"
+          ></textarea>
+        }
+      </div>
+    </section>
+
+    <section class="panel chain-panel" aria-labelledby="chain-heading">
+      @if (chainCollapsed()) {
+        <button
+          type="button"
+          class="panel-rail"
+          aria-expanded="false"
+          aria-controls="chain-body"
+          (click)="chainCollapsed.set(false)"
+        >
+          <span class="rail-chevron" aria-hidden="true">+</span>
+          <span class="rail-text">04 / CHAIN A QUERY</span>
+        </button>
+      } @else {
+        <div id="chain-body" class="chain-body">
+          <div class="chain-query-section">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-number">04 / CHAIN</p>
+                <h2 id="chain-heading">Query the result</h2>
+              </div>
+
+              <button
+                type="button"
+                class="icon-button"
+                aria-label="Collapse chained query"
+                aria-expanded="true"
+                aria-controls="chain-body"
+                (click)="chainCollapsed.set(true)"
+              >
+                ×
+              </button>
+            </div>
+
+            <div class="editor-frame query-frame">
+              <span class="editor-label">EXPRESSION</span>
+              <textarea
+                id="chain-query"
+                aria-label="Chained JMESPath query"
+                spellcheck="false"
+                [ngModel]="chainQuery()"
+                (ngModelChange)="chainQuery.set($event)"
+                placeholder="[0]"
+                (keydown.control.enter)="runChainQuery()"
+              ></textarea>
+            </div>
+
+            <button class="run-button" type="button" (click)="runChainQuery()">
+              Run on result
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="chain-result-section">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-number">05 / OUTPUT</p>
+                <h2>Chained result</h2>
+              </div>
+
+              <div class="view-switch" role="group" aria-label="Chained result view">
+                <button type="button" [class.active]="chainResultView() === 'tree'" (click)="chainResultView.set('tree')">
+                  Tree
+                </button>
+                <button type="button" [class.active]="chainResultView() === 'raw'" (click)="chainResultView.set('raw')">
+                  Raw
+                </button>
+              </div>
+            </div>
+
+            <div class="editor-frame result-frame">
+              <span class="editor-label">CHAINED.JSON</span>
+
+              @if (chainResultView() === 'tree' && chainResult()) {
+                <app-json-tree [value]="chainResultValue()" />
+              } @else {
+                <textarea
+                  id="chain-result"
+                  aria-label="Chained transformation result"
+                  readonly
+                  spellcheck="false"
+                  [placeholder]="resultPlaceholder"
+                  [value]="chainResult()"
+                ></textarea>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+
+  @if (status(); as currentStatus) {
+    <div class="status" [class]="currentStatus.type" role="status">
+      <span class="status-icon">{{ currentStatus.type === 'success' ? '✓' : '!' }}</span>
+      <span>{{ currentStatus.message }}</span>
+      <button type="button" aria-label="Dismiss message" (click)="status.set(null)">×</button>
+    </div>
+  }
+</main>

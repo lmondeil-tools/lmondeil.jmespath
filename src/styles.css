@@ -1,0 +1,45 @@
+:root {
+  color-scheme: dark;
+  --background: #08101f;
+  --surface: #111d34;
+  --editor: #091326;
+  --line: #24324d;
+  --line-strong: #354463;
+  --text-strong: #f5f8ff;
+  --text: #d1daeb;
+  --text-muted: #8592aa;
+  --text-faint: #56637b;
+  --accent: #7da5f8;
+  --accent-bright: #96b7ff;
+  --success: #36d399;
+  --warning: #ffb84d;
+  --mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  scrollbar-color: #354463 transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgb(55 87 148 / 17%), transparent 30rem),
+    radial-gradient(circle at 90% 90%, rgb(38 78 140 / 10%), transparent 35rem),
+    var(--background);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+label:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

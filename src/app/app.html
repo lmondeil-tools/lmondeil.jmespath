@@ -30,7 +30,9 @@
           aria-controls="source-body"
           (click)="sourceCollapsed.set(false)"
         >
-          <span class="rail-chevron" aria-hidden="true">+</span>
+          <svg class="rail-chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
           <span class="rail-text">01 / INPUT</span>
         </button>
       } @else {
@@ -69,7 +71,9 @@
                 aria-controls="source-body"
                 (click)="sourceCollapsed.set(true)"
               >
-                ×
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
               </button>
             </div>
           </div>
@@ -175,7 +179,9 @@
           aria-controls="chain-body"
           (click)="chainCollapsed.set(false)"
         >
-          <span class="rail-chevron" aria-hidden="true">+</span>
+          <svg class="rail-chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
           <span class="rail-text">04 / CHAIN A QUERY</span>
         </button>
       } @else {
@@ -195,7 +201,9 @@
                 aria-controls="chain-body"
                 (click)="chainCollapsed.set(true)"
               >
-                ×
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
               </button>
             </div>
 

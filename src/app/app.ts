@@ -26,6 +26,7 @@ const TOKEN_PATTERN =
 })
 export class App {
   protected readonly sourceJson = signal('');
+  protected readonly sourceFileName = signal('');
   protected readonly sourceView = signal<'code' | 'tree'>('code');
   protected readonly query = signal('');
   protected readonly result = signal('');
@@ -75,6 +76,7 @@ export class App {
 
     try {
       this.sourceJson.set(await file.text());
+      this.sourceFileName.set(file.name);
       this.status.set({ type: 'success', message: `Loaded ${file.name}.` });
     } catch (error: unknown) {
       this.status.set({

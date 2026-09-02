@@ -41,4 +41,22 @@ describe('App', () => {
       'Query completed successfully.',
     );
   });
+
+  it('shows the loaded file name in the editable filename field', async () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const file = {
+      name: 'people.json',
+      text: async () => '{"people":[]}',
+    } as File;
+    const fileInput = { files: [file], value: '' } as unknown as HTMLInputElement;
+
+    await fixture.componentInstance['loadJsonFile']({ target: fileInput } as unknown as Event);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement as HTMLElement;
+    const fileName = element.querySelector<HTMLInputElement>('#source-file-name');
+    expect(fileName?.value).toBe('people.json');
+  });
 });

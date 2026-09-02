@@ -1,10 +1,18 @@
 <main class="app-shell">
   <header class="app-header">
     <div class="brand-mark" aria-hidden="true">&gt;_</div>
-    <div>
+    <div class="header-content">
       <p class="eyebrow">JSON WORKBENCH</p>
       <h1>JMESPath Transformer</h1>
-      <p class="subtitle">Explore and reshape JSON data directly in your browser.</p>
+      <input
+        id="source-file-name"
+        class="file-name-input header-file-name-input"
+        type="text"
+        aria-label="Loaded file name"
+        placeholder="No file selected"
+        [ngModel]="sourceFileName()"
+        (ngModelChange)="sourceFileName.set($event)"
+      />
     </div>
   </header>
 

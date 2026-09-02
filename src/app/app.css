@@ -17,6 +17,11 @@
   margin: 0 auto 30px;
 }
 
+.header-content {
+  min-width: 0;
+  flex: 1;
+}
+
 .brand-mark {
   display: grid;
   width: 52px;
@@ -57,10 +62,8 @@ h1 {
   letter-spacing: -0.04em;
 }
 
-.subtitle {
-  margin-bottom: 0;
-  color: var(--text-muted);
-  font-size: 14px;
+.header-file-name-input {
+  width: 100%;
 }
 
 .workspace {
@@ -422,6 +425,28 @@ textarea[readonly] {
 .secondary-button:hover {
   border-color: #526488;
   background: rgb(255 255 255 / 6%);
+}
+
+.file-name-input {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: 0;
+  background: rgb(255 255 255 / 3%);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.file-name-input::placeholder {
+  color: var(--text-faint);
+}
+
+.file-name-input:focus {
+  border-color: rgb(100 149 237 / 70%);
+  box-shadow: 0 0 0 3px rgb(100 149 237 / 10%);
 }
 
 .secondary-button svg,

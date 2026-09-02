@@ -16,16 +16,33 @@
     </div>
   </header>
 
-  <div class="workspace" [class.chain-collapsed]="chainCollapsed()">
+  <div
+    class="workspace"
+    [class.source-collapsed]="sourceCollapsed()"
+    [class.chain-collapsed]="chainCollapsed()"
+  >
     <section class="panel input-panel" aria-labelledby="source-heading">
-      <div class="source-section">
+      @if (sourceCollapsed()) {
+        <button
+          type="button"
+          class="panel-rail"
+          aria-expanded="false"
+          aria-controls="source-body"
+          (click)="sourceCollapsed.set(false)"
+        >
+          <span class="rail-chevron" aria-hidden="true">+</span>
+          <span class="rail-text">01 / INPUT</span>
+        </button>
+      } @else {
+        <div id="source-body" class="input-body">
+          <div class="source-section">
         <div class="panel-heading">
           <div>
             <p class="panel-number">01 / INPUT</p>
             <h2 id="source-heading">Source JSON</h2>
           </div>
 
-          <div class="heading-actions">
+            <div class="heading-actions">
             <div class="view-switch" role="group" aria-label="Source view">
               <button type="button" [class.active]="sourceView() === 'code'" (click)="sourceView.set('code')">Edit</button>
               <button type="button" [class.active]="sourceView() === 'tree'" (click)="sourceView.set('tree')">Tree</button>
@@ -44,6 +61,17 @@
               accept=".json,application/json"
               (change)="loadJsonFile($event)"
             />
+              <button
+                type="button"
+                class="icon-button"
+                aria-label="Collapse input panel"
+                aria-expanded="true"
+                aria-controls="source-body"
+                (click)="sourceCollapsed.set(true)"
+              >
+                ×
+              </button>
+            </div>
           </div>
         </div>
 
@@ -73,9 +101,8 @@
             </div>
           }
         </div>
-      </div>
 
-      <div class="query-section">
+          <div class="query-section">
         <div class="query-heading">
           <div>
             <p class="panel-number">02 / QUERY</p>
@@ -103,7 +130,9 @@
             <path d="m9 18 6-6-6-6" />
           </svg>
         </button>
-      </div>
+          </div>
+        </div>
+      }
     </section>
 
     <section class="panel result-panel" aria-labelledby="result-heading">

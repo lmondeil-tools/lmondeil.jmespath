@@ -421,10 +421,20 @@ textarea[readonly] {
 
 .source-section {
   display: flex;
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 0;
   flex-direction: column;
-  border-bottom: 1px solid var(--line);
+  padding-bottom: 0;
+  /* border-bottom: 1px solid var(--line); */
+}
+
+.source-section .panel-heading {
+  margin-bottom: 0;
+}
+
+.result-panel > .panel-heading,
+.chain-query-section > .panel-heading {
+  margin-bottom: 0;
 }
 
 .query-section {

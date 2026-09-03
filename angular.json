@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "jmespath-transformer": {
+    "json-transformer": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "jmespath-transformer:build:production"
+              "buildTarget": "json-transformer:build:production"
             },
             "development": {
-              "buildTarget": "jmespath-transformer:build:development"
+              "buildTarget": "json-transformer:build:development"
             }
           },
           "defaultConfiguration": "development"

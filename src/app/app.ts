@@ -1,9 +1,11 @@
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as jmespath from 'jmespath';
+import { JSONPath } from 'jsonpath-plus';
 import { JsonTree } from './json-tree';
 
 type StatusType = 'success' | 'warning' | 'error';
+type QueryLanguage = 'jmespath' | 'jsonpath';
 
 interface StatusMessage {
   type: StatusType;
@@ -28,6 +30,7 @@ export class App {
   protected readonly sourceJson = signal('');
   protected readonly sourceFileName = signal('');
   protected readonly sourceView = signal<'code' | 'tree'>('code');
+  protected readonly queryLanguage = signal<QueryLanguage>('jmespath');
   protected readonly query = signal('');
   protected readonly result = signal('');
   protected readonly resultValue = signal<unknown>(undefined);
@@ -41,6 +44,12 @@ export class App {
   protected readonly status = signal<StatusMessage | null>(null);
 
   protected readonly sourceTokens = computed<Token[]>(() => this.tokenize(this.sourceJson()));
+  protected readonly queryLanguageLabel = computed(() =>
+    this.queryLanguage() === 'jmespath' ? 'JMESPath' : 'JSONPath',
+  );
+  protected readonly queryPlaceholder = computed(() =>
+    this.queryLanguage() === 'jmespath' ? 'people[?age > `30`].name' : '$.people[?(@.age > 30)].name',
+  );
 
   protected readonly sourceTree = computed(() => {
     const text = this.sourceJson().trim();
@@ -99,7 +108,7 @@ export class App {
     }
 
     if (!expression) {
-      this.status.set({ type: 'warning', message: 'Enter a JMESPath query.' });
+      this.status.set({ type: 'warning', message: `Enter a ${this.queryLanguageLabel()} query.` });
       return;
     }
 
@@ -115,7 +124,7 @@ export class App {
     }
 
     try {
-      const transformed = jmespath.search(parsedSource, expression);
+      const transformed = this.evaluateQuery(parsedSource, expression);
       this.result.set(JSON.stringify(transformed, null, 2) ?? 'null');
       this.resultValue.set(transformed);
       this.clearChainResult();
@@ -123,7 +132,7 @@ export class App {
     } catch (error: unknown) {
       this.status.set({
         type: 'error',
-        message: `The JMESPath query could not be evaluated: ${this.errorMessage(error)}`,
+        message: `The ${this.queryLanguageLabel()} query could not be evaluated: ${this.errorMessage(error)}`,
       });
     }
   }
@@ -137,19 +146,19 @@ export class App {
     }
 
     if (!expression) {
-      this.status.set({ type: 'warning', message: 'Enter a chained JMESPath query.' });
+      this.status.set({ type: 'warning', message: `Enter a chained ${this.queryLanguageLabel()} query.` });
       return;
     }
 
     try {
-      const transformed = jmespath.search(this.resultValue() ?? null, expression);
+      const transformed = this.evaluateQuery(this.resultValue() ?? null, expression);
       this.chainResult.set(JSON.stringify(transformed, null, 2) ?? 'null');
       this.chainResultValue.set(transformed);
       this.status.set({ type: 'success', message: 'Chained query completed successfully.' });
     } catch (error: unknown) {
       this.status.set({
         type: 'error',
-        message: `The chained JMESPath query could not be evaluated: ${this.errorMessage(error)}`,
+        message: `The chained ${this.queryLanguageLabel()} query could not be evaluated: ${this.errorMessage(error)}`,
       });
     }
   }
@@ -157,6 +166,21 @@ export class App {
   private clearChainResult(): void {
     this.chainResult.set('');
     this.chainResultValue.set(undefined);
+  }
+
+  protected setQueryLanguage(language: QueryLanguage): void {
+    this.queryLanguage.set(language);
+    this.clearChainResult();
+  }
+
+  private evaluateQuery(source: unknown, expression: string): unknown {
+    return this.queryLanguage() === 'jmespath'
+      ? jmespath.search(source, expression)
+      : JSONPath({
+          json: source as string | number | boolean | object | null,
+          path: expression,
+          wrap: true,
+        });
   }
 
   protected syncScroll(event: Event, highlight: HTMLElement): void {

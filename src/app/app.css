@@ -225,6 +225,12 @@ h1 {
   gap: 10px;
 }
 
+.query-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 h2 {
   margin-bottom: 0;
   color: var(--text-strong);
@@ -267,6 +273,14 @@ h2 {
 
 .shortcut {
   padding: 5px 9px;
+}
+
+@media (max-width: 520px) {
+  .query-heading,
+  .query-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 .editor-frame {

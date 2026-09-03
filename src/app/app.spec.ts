@@ -35,11 +35,39 @@ describe('App', () => {
     runButton!.click();
     fixture.detectChanges();
 
-    const result = element.querySelector<HTMLTextAreaElement>('#result');
-    expect(result?.value).toBe('[\n  "Ada"\n]');
+    expect(fixture.componentInstance['result']()).toBe('[\n  "Ada"\n]');
     expect(element.querySelector('.status.success')?.textContent).toContain(
       'Query completed successfully.',
     );
+  });
+
+  it('transforms JSON with a JSONPath query', async () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement as HTMLElement;
+    const source = element.querySelector<HTMLTextAreaElement>('#source');
+    const query = element.querySelector<HTMLTextAreaElement>('#query');
+    const jsonPathButton = Array.from(element.querySelectorAll<HTMLButtonElement>('.view-switch button')).find(
+      (button) => button.textContent?.trim() === 'JSONPath',
+    );
+
+    expect(source).not.toBeNull();
+    expect(query).not.toBeNull();
+    expect(jsonPathButton).toBeDefined();
+
+    jsonPathButton!.click();
+    source!.value = '{"people":[{"name":"Ada","age":36},{"name":"Grace","age":28}]}';
+    source!.dispatchEvent(new Event('input'));
+    query!.value = '$.people[?(@.age > 30)].name';
+    query!.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    element.querySelector<HTMLButtonElement>('.run-button')!.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['result']()).toBe('[\n  "Ada"\n]');
+    expect(element.querySelector('.status.success')?.textContent).toContain('Query completed successfully.');
   });
 
   it('shows the loaded file name in the editable filename field', async () => {
@@ -56,7 +84,6 @@ describe('App', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
-    const fileName = element.querySelector<HTMLInputElement>('#source-file-name');
-    expect(fileName?.value).toBe('people.json');
+    expect(fixture.componentInstance['sourceFileName']()).toBe('people.json');
   });
 });

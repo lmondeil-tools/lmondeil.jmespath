@@ -23,13 +23,13 @@ npm test -- --watch=false
 ### Build for docker
 
 ```bash
-docker build -t jmespath-transformer:latest .
+docker build -t json-transformer:latest .
 ```
 
 ### Run on docker
 
 ```bash
-docker run -d -p 8182:8182 --name jmespath-transformer jmespath-transformer
+docker run -d -p 8182:8182 --name json-transformer json-transformer
 ```
 
 Open `http://localhost:8182`.
@@ -38,6 +38,6 @@ Open `http://localhost:8182`.
 
 ```bash
 docker pull ghcr.io/lmondeil-tools/lmondeil.jmespath
-docker run -d -p 8183:8182 --name lmondeil-jmespath ghcr.io/lmondeil-tools/lmondeil.jmespath
+docker run -d -p 8183:8182 --name json-transformer ghcr.io/lmondeil-tools/lmondeil.jmespath
 ```
 

@@ -3,7 +3,7 @@
     <div class="brand-mark" aria-hidden="true">&gt;_</div>
     <div class="header-content">
       <p class="eyebrow">JSON WORKBENCH</p>
-      <h1>JMESPath Transformer</h1>
+      <h1>JMESPath/JsonPath Transformer</h1>
       <input
         id="source-file-name"
         class="file-name-input header-file-name-input"
@@ -110,20 +110,38 @@
         <div class="query-heading">
           <div>
             <p class="panel-number">02 / QUERY</p>
-            <h2>JMESPath expression</h2>
+            <h2>{{ queryLanguageLabel() }} expression</h2>
           </div>
-          <span class="shortcut">Ctrl + Enter</span>
+          <div class="query-actions">
+            <div class="view-switch" role="group" aria-label="Query language">
+              <button
+                type="button"
+                [class.active]="queryLanguage() === 'jmespath'"
+                (click)="setQueryLanguage('jmespath')"
+              >
+                JMESPath
+              </button>
+              <button
+                type="button"
+                [class.active]="queryLanguage() === 'jsonpath'"
+                (click)="setQueryLanguage('jsonpath')"
+              >
+                JSONPath
+              </button>
+            </div>
+            <span class="shortcut">Ctrl + Enter</span>
+          </div>
         </div>
 
         <div class="editor-frame query-frame">
           <span class="editor-label">EXPRESSION</span>
           <textarea
             id="query"
-            aria-label="JMESPath query"
+            [attr.aria-label]="queryLanguageLabel() + ' query'"
             spellcheck="false"
             [ngModel]="query()"
             (ngModelChange)="query.set($event)"
-            placeholder="people[?age > `30`].name"
+            [placeholder]="queryPlaceholder()"
             (keydown.control.enter)="runQuery()"
           ></textarea>
         </div>
@@ -211,11 +229,11 @@
               <span class="editor-label">EXPRESSION</span>
               <textarea
                 id="chain-query"
-                aria-label="Chained JMESPath query"
+                [attr.aria-label]="'Chained ' + queryLanguageLabel() + ' query'"
                 spellcheck="false"
                 [ngModel]="chainQuery()"
                 (ngModelChange)="chainQuery.set($event)"
-                placeholder="[0]"
+                [placeholder]="queryLanguage() === 'jmespath' ? '[0]' : '$[0]'"
                 (keydown.control.enter)="runChainQuery()"
               ></textarea>
             </div>

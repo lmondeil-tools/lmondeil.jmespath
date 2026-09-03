@@ -11,7 +11,7 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=8182 STATIC_ROOT=/app/browser
 COPY server.mjs ./
-COPY --from=build /app/dist/jmespath-transformer/browser ./browser
+COPY --from=build /app/dist/json-transformer/browser ./browser
 USER node
 EXPOSE 8182
 CMD ["node", "server.mjs"]
